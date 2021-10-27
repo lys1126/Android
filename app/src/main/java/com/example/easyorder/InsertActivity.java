@@ -25,13 +25,42 @@ public class InsertActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if(result != null) {
-            if(result.getContents() == null) {
+        IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(intentResult != null) {
+            if(intentResult.getContents() == null) {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
                 //result.getContents 를 이용 데이터 재가공
-                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                String searchURL = "http://61.105.122.125/android/prodSearch.php";
+                String parm = "bar_no=" + intentResult.getContents();
+                Log.e("param", parm);
+                URLConnector task = new URLConnector(searchURL, parm);
+                task.start();
+
+                try{
+                    task.join();
+                    System.out.println("waiting... for result");
+                }
+                catch(InterruptedException e){
+
+                }
+
+                String result = task.getResult();
+                Log.e("JSON", result);
+                String[] nmArr = {};
+//                try {
+//                    JSONObject martList = new JSONObject(result);
+//                    JSONArray ja = martList.getJSONArray("result");
+//                    nmArr = new String[ja.length()];
+//                    for(int i=0; i<ja.length(); i++) {
+//                        JSONObject jo = ja.getJSONObject(i);
+//                        nmArr[i] = jo.getString("mart_nm");
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -44,7 +73,7 @@ public class InsertActivity extends AppCompatActivity {
         setContentView(R.layout.activity_insert);
 
         String martInfoURL = "http://61.105.122.125/android/martList.php";
-        URLConnector task = new URLConnector(martInfoURL);
+        URLConnector task = new URLConnector(martInfoURL, null);
         task.start();
 
         try{
