@@ -25,6 +25,7 @@ public class InsertActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Log.e("onActivityResult", "onActivityResult Start");
         IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if(intentResult != null) {
             if(intentResult.getContents() == null) {
