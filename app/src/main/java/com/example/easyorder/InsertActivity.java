@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -23,19 +24,18 @@ import java.net.URL;
 
 public class InsertActivity extends AppCompatActivity {
 
+    String martNm="", prodInfo="";
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        Log.e("onActivityResult", "onActivityResult Start");
         IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if(intentResult != null) {
             if(intentResult.getContents() == null) {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
                 //result.getContents 를 이용 데이터 재가공
-                //Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 String searchURL = "http://61.105.122.125/android/prodSearch.php";
                 String parm = "bar_no=" + intentResult.getContents();
-                Log.e("param", parm);
                 URLConnector task = new URLConnector(searchURL, parm);
                 task.start();
 
@@ -46,26 +46,17 @@ public class InsertActivity extends AppCompatActivity {
                 catch(InterruptedException e){
 
                 }
-
-                String result = task.getResult();
-                Log.e("JSON", result);
-                String[] nmArr = {};
-//                try {
-//                    JSONObject martList = new JSONObject(result);
-//                    JSONArray ja = martList.getJSONArray("result");
-//                    nmArr = new String[ja.length()];
-//                    for(int i=0; i<ja.length(); i++) {
-//                        JSONObject jo = ja.getJSONObject(i);
-//                        nmArr[i] = jo.getString("mart_nm");
-//                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
+                prodInfo = task.getResult();
 
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+
+        Intent intent = new Intent(getApplicationContext(), PopupActivity.class);
+        intent.putExtra("martNm", martNm);
+        intent.putExtra("prodInfo", prodInfo);
+        startActivityForResult(intent, 1);
     }
 
     @Override
@@ -79,7 +70,6 @@ public class InsertActivity extends AppCompatActivity {
 
         try{
             task.join();
-            System.out.println("waiting... for result");
         }
         catch(InterruptedException e){
 
@@ -103,6 +93,17 @@ public class InsertActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, nmArr);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                martNm = spinner.getSelectedItem().toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         Button btn_camera = (Button) findViewById(R.id.btn_camera);
         btn_camera.setOnClickListener(new View.OnClickListener() {
