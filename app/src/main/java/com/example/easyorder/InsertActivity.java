@@ -21,10 +21,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class InsertActivity extends AppCompatActivity {
 
-    String martNm="", prodInfo="";
+    String prodInfo="";
+    int martNo;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -47,16 +51,14 @@ public class InsertActivity extends AppCompatActivity {
 
                 }
                 prodInfo = task.getResult();
-
+                Intent intent = new Intent(getApplicationContext(), PopupActivity.class);
+                intent.putExtra("martNo", martNo);
+                intent.putExtra("prodInfo", prodInfo);
+                startActivityForResult(intent, 1);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-
-        Intent intent = new Intent(getApplicationContext(), PopupActivity.class);
-        intent.putExtra("martNm", martNm);
-        intent.putExtra("prodInfo", prodInfo);
-        startActivityForResult(intent, 1);
     }
 
     @Override
@@ -77,6 +79,7 @@ public class InsertActivity extends AppCompatActivity {
 
         String result = task.getResult();
         String[] nmArr = {};
+        Map<Integer, String> map = new HashMap<Integer, String>();
         try {
             JSONObject martList = new JSONObject(result);
             JSONArray ja = martList.getJSONArray("result");
@@ -84,6 +87,7 @@ public class InsertActivity extends AppCompatActivity {
             for(int i=0; i<ja.length(); i++) {
                 JSONObject jo = ja.getJSONObject(i);
                 nmArr[i] = jo.getString("mart_nm");
+                map.put(jo.getInt("mart_no"), jo.getString("mart_nm"));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -96,7 +100,13 @@ public class InsertActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                martNm = spinner.getSelectedItem().toString();
+                String martNm = spinner.getSelectedItem().toString();
+                Set<Map.Entry<Integer, String>> entrySet = map.entrySet();
+                for(Map.Entry<Integer, String> entry : entrySet) {
+                    if(entry.getValue().equals(martNm)) {
+                        martNo = entry.getKey();
+                    }
+                }
             }
 
             @Override
@@ -110,7 +120,7 @@ public class InsertActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 IntentIntegrator integrator = new IntentIntegrator(InsertActivity.this);
-                integrator.setOrientationLocked(false);
+                integrator.setOrientationLocked(true);
                 integrator.setPrompt("바코드를 사각형 안에 비춰주세요");
                 integrator.initiateScan();
             }
