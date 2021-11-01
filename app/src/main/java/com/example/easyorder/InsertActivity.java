@@ -27,7 +27,7 @@ import java.util.Set;
 
 public class InsertActivity extends AppCompatActivity {
 
-    String prodInfo="";
+    String prodInfo="", martNm;
     int martNo;
 
     @Override
@@ -51,10 +51,21 @@ public class InsertActivity extends AppCompatActivity {
 
                 }
                 prodInfo = task.getResult();
-                Intent intent = new Intent(getApplicationContext(), PopupActivity.class);
-                intent.putExtra("martNo", martNo);
-                intent.putExtra("prodInfo", prodInfo);
-                startActivityForResult(intent, 1);
+                try{
+                    JSONObject pInfo = new JSONObject(prodInfo);
+                    int rowNum = Integer.parseInt(pInfo.getString("rownum"));
+                    if(rowNum > 0) {
+                        Intent intent = new Intent(getApplicationContext(), PopupActivity.class);
+                        intent.putExtra("martNo", martNo);
+                        intent.putExtra("martNm", martNm);
+                        intent.putExtra("prodInfo", prodInfo);
+                        startActivityForResult(intent, 1);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "바코드를 다시 인식해주세요", Toast.LENGTH_SHORT).show();
+                    }
+                } catch(JSONException e) {
+                    e.printStackTrace();
+                }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -100,7 +111,7 @@ public class InsertActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String martNm = spinner.getSelectedItem().toString();
+                martNm = spinner.getSelectedItem().toString();
                 Set<Map.Entry<Integer, String>> entrySet = map.entrySet();
                 for(Map.Entry<Integer, String> entry : entrySet) {
                     if(entry.getValue().equals(martNm)) {

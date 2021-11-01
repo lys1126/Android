@@ -1,7 +1,7 @@
 package com.example.easyorder;
 
 public class BusinessData {
-    private int bizNo, martNo, prodNo, amount, price, uPrice;
+    private int bizNo, martNo, prodNo, amount, price=0, uPrice;
     private String crtDate, prodNm;
 
     public int getBizNo() {

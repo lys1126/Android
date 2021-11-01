@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,10 +31,11 @@ public class PopupActivity extends AppCompatActivity {
 
     Activity finishActivity;
     String prodInfo;
-    int martNo, prodNo, status=-999;
+    int martNo, prodNo;
     private ArrayList<BusinessData> insertList;
     private RecyclerView recyclerView;
     private RecycleAdapter recycleAdapter;
+    public static TextView tv_total;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -41,15 +43,13 @@ public class PopupActivity extends AppCompatActivity {
         if(intentResult != null) {
             if(intentResult.getContents() == null) {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
-                if(insertList.size() == 1) { //insert했는지 안했는지 확인
+                if(insertList.size() == 0) { //insert했는지 안했는지 확인
                     finishActivity.finish();
                     return;
-                } else if(insertList.size() > 1) {
-                    finish();
                 }
 
 
-            } else { // 팝업 refresh
+            } else { //다음버튼 클릭 후 바코드 읽어오기
                 String searchURL = "http://61.105.122.125/android/prodSearch.php";
                 String parm = "bar_no=" + intentResult.getContents();
                 URLConnector task = new URLConnector(searchURL, parm);
@@ -65,17 +65,24 @@ public class PopupActivity extends AppCompatActivity {
                 prodInfo = task.getResult();
                 try {
                     JSONObject pInfo = new JSONObject(prodInfo);
+                    int rowNum = Integer.parseInt(pInfo.getString("rownum"));
                     JSONArray ja = pInfo.getJSONArray("result");
-                    for(int i=0; i<ja.length(); i++) {
-                        JSONObject jo = ja.getJSONObject(i);
-                        prodNo = Integer.parseInt(jo.getString("prod_no"));
-                        BusinessData bizData = new BusinessData();
-                        bizData.setProdNm(jo.getString("prod_nm"));
-                        bizData.setUPrice(Integer.parseInt(jo.getString("u_price")));
-                        insertList.add(bizData);
-                        Log.e("bizData", bizData.getProdNm());
-                        recycleAdapter.notifyDataSetChanged();
+                    if(rowNum > 0) {
+                        for(int i=0; i<ja.length(); i++) {
+                            JSONObject jo = ja.getJSONObject(i);
+                            prodNo = Integer.parseInt(jo.getString("prod_no"));
+                            BusinessData bizData = new BusinessData();
+                            bizData.setMartNo(martNo);
+                            bizData.setProdNo(prodNo);
+                            bizData.setProdNm(jo.getString("prod_nm"));
+                            bizData.setUPrice(Integer.parseInt(jo.getString("u_price")));
+                            insertList.add(bizData);
+                            recycleAdapter.notifyDataSetChanged();
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "바코드를 다시 인식해주세요", Toast.LENGTH_LONG).show();
                     }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -92,10 +99,12 @@ public class PopupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_popup);
 
         finishActivity = PopupActivity.this;
+        tv_total = (TextView) findViewById(R.id.tv_total);
 
         Intent intent = getIntent();
         martNo = intent.getIntExtra("martNo", 0);
         String prodInfo = intent.getStringExtra("prodInfo");
+        String martNm = intent.getStringExtra("martNm");
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -103,18 +112,24 @@ public class PopupActivity extends AppCompatActivity {
         insertList = new ArrayList<>();
         recycleAdapter = new RecycleAdapter(insertList);
         recyclerView.setAdapter(recycleAdapter);
-
         try {
             JSONObject pInfo = new JSONObject(prodInfo);
+            int rowNum = Integer.parseInt(pInfo.getString("rownum"));
             JSONArray ja = pInfo.getJSONArray("result");
-            for(int i=0; i<ja.length(); i++) {
-                JSONObject jo = ja.getJSONObject(i);
-                prodNo = Integer.parseInt(jo.getString("prod_no"));
-                BusinessData bizData = new BusinessData();
-                bizData.setProdNm(jo.getString("prod_nm"));
-                bizData.setUPrice(Integer.parseInt(jo.getString("u_price")));
-                insertList.add(bizData);
-                recycleAdapter.notifyDataSetChanged();
+            if(rowNum > 0) {
+                for(int i=0; i<ja.length(); i++) {
+                    JSONObject jo = ja.getJSONObject(i);
+                    prodNo = Integer.parseInt(jo.getString("prod_no"));
+                    BusinessData bizData = new BusinessData();
+                    bizData.setMartNo(martNo);
+                    bizData.setProdNo(prodNo);
+                    bizData.setProdNm(jo.getString("prod_nm"));
+                    bizData.setUPrice(Integer.parseInt(jo.getString("u_price")));
+                    insertList.add(bizData);
+                    recycleAdapter.notifyDataSetChanged();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "바코드를 다시 인식해주세요", Toast.LENGTH_LONG).show();
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -133,16 +148,45 @@ public class PopupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String insertURL = "http://61.105.122.125/android/bizInsert.php";
+                boolean chk = false;
+                for(int i=0; i<insertList.size(); i++) {
+                    if(insertList.get(i).getAmount() == 0) {
+                        Toast.makeText(getApplicationContext(), "수량을 입력하세요", Toast.LENGTH_LONG).show();
+                        return;
+                    } else {
+                        BusinessData bizData = insertList.get(i);
+                        String param = "martNo="+bizData.getMartNo()+"&prodNo="+bizData.getProdNo()
+                                +"&amount="+bizData.getAmount()+"&price="+bizData.getPrice();
+                        URLConnector task = new URLConnector(insertURL, param);
+                        task.start();
+
+                        try{
+                            task.join();
+                            Log.d("connectorStatus", "waiting... for result");
+                        } catch(InterruptedException e) {
+
+                        }
+                        String result = task.getResult();
+                        if(Integer.parseInt(result.trim()) > 0) {
+                            chk = true;
+                        } else if(Integer.parseInt(result.trim()) < 0) {
+                            chk = false;
+                        }
+                    }
+                }
+
+                if(chk) {
+                    Log.e("chkTest", "성공이다!!");
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                    Toast.makeText(getApplicationContext(), martNm+" 등록이 완료되었습니다", Toast.LENGTH_LONG).show();
+                } else {
+                    Log.e("chkTest", "실패다!!");
+                    Toast.makeText(getApplicationContext(), martNm+" 등록이 실패했습니다", Toast.LENGTH_LONG).show();
+                }
             }
         });
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if(event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-            return false;
-        }
-        return true;
     }
 
     @Override

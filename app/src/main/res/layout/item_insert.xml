@@ -9,25 +9,29 @@
         android:layout_height="wrap_content"
         android:padding="8dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="제품명"
-            android:layout_weight="1"
-            android:textSize="16dp"/>
         <EditText
             android:id="@+id/et_prodNm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="제품이름"
+            android:hint="제품명"
             android:layout_weight="1"
-            android:minHeight="48dp"/>
+            android:minHeight="48dp"
+            android:ems="3"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:enabled="false"
+            android:gravity="center"/>
 
-        <TextView
+        <EditText
+            android:id="@+id/et_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="단가"
-            android:layout_weight="1"/>
+            android:hint="수량"
+            android:layout_weight="1"
+            android:inputType="numberSigned"
+            android:minHeight="48dp"
+            android:gravity="center"/>
+
         <EditText
             android:id="@+id/et_uPrice"
             android:layout_width="wrap_content"
@@ -35,21 +39,19 @@
             android:hint="단가"
             android:layout_weight="1"
             android:inputType="number"
-            android:minHeight="48dp"/>
+            android:minHeight="48dp"
+            android:gravity="center"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="갯수"
-            android:layout_weight="1"/>
         <EditText
-            android:id="@+id/et_amount"
+            android:id="@+id/et_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="갯수"
+            android:hint="금액"
             android:layout_weight="1"
             android:inputType="numberSigned"
-            android:minHeight="48dp"/>
+            android:minHeight="48dp"
+            android:gravity="center"
+            android:enabled="false"/>
 
     </LinearLayout>
 
