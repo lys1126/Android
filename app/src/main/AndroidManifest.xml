@@ -14,12 +14,18 @@
         android:theme="@style/Theme.EasyOrder"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ListSubActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ListMainActivity"
+            android:exported="true" />
+        <activity
             android:name=".PopupActivity"
-            android:exported="true"/>
+            android:exported="true" />
         <activity
             android:name=".InsertActivity"
-            android:exported="true"
-            android:configChanges="orientation|screenSize"/>
+            android:configChanges="orientation|screenSize"
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

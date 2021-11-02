@@ -1,8 +1,8 @@
 package com.example.easyorder;
 
 public class BusinessData {
-    private int bizNo, martNo, prodNo, amount, price=0, uPrice;
-    private String crtDate, prodNm;
+    private int bizNo, martNo, prodNo, amount=0, price=0, uPrice, totAmount=0, totPrice=0;
+    private String crtDate, prodNm, martNm;
 
     public int getBizNo() {
         return bizNo;
@@ -66,5 +66,29 @@ public class BusinessData {
 
     public void setProdNm(String prodNm) {
         this.prodNm = prodNm;
+    }
+
+    public int getTotAmount() {
+        return totAmount;
+    }
+
+    public void setTotAmount(int totAmount) {
+        this.totAmount = totAmount;
+    }
+
+    public int getTotPrice() {
+        return totPrice;
+    }
+
+    public void setTotPrice(int totPrice) {
+        this.totPrice = totPrice;
+    }
+
+    public String getMartNm() {
+        return martNm;
+    }
+
+    public void setMartNm(String martNm) {
+        this.martNm = martNm;
     }
 }

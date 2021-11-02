@@ -42,13 +42,9 @@ public class PopupActivity extends AppCompatActivity {
         IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if(intentResult != null) {
             if(intentResult.getContents() == null) {
-                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
-                if(insertList.size() == 0) { //insert했는지 안했는지 확인
-                    finishActivity.finish();
-                    return;
+                if(insertList.size() > 0) { //list가 있냐 없냐 확인
+                    Toast.makeText(this, "품목 정보가 존재하지 않을때 마트이름 입력화면으로 이동합니다", Toast.LENGTH_LONG).show();
                 }
-
-
             } else { //다음버튼 클릭 후 바코드 읽어오기
                 String searchURL = "http://61.105.122.125/android/prodSearch.php";
                 String parm = "bar_no=" + intentResult.getContents();
@@ -150,28 +146,23 @@ public class PopupActivity extends AppCompatActivity {
                 String insertURL = "http://61.105.122.125/android/bizInsert.php";
                 boolean chk = false;
                 for(int i=0; i<insertList.size(); i++) {
-                    if(insertList.get(i).getAmount() == 0) {
-                        Toast.makeText(getApplicationContext(), "수량을 입력하세요", Toast.LENGTH_LONG).show();
-                        return;
-                    } else {
-                        BusinessData bizData = insertList.get(i);
-                        String param = "martNo="+bizData.getMartNo()+"&prodNo="+bizData.getProdNo()
-                                +"&amount="+bizData.getAmount()+"&price="+bizData.getPrice();
-                        URLConnector task = new URLConnector(insertURL, param);
-                        task.start();
+                    BusinessData bizData = insertList.get(i);
+                    String param = "martNo="+bizData.getMartNo()+"&prodNo="+bizData.getProdNo()
+                            +"&amount="+bizData.getAmount()+"&uPrice="+bizData.getUPrice();
+                    URLConnector task = new URLConnector(insertURL, param);
+                    task.start();
 
-                        try{
-                            task.join();
-                            Log.d("connectorStatus", "waiting... for result");
-                        } catch(InterruptedException e) {
+                    try{
+                        task.join();
+                        Log.d("connectorStatus", "waiting... for result");
+                    } catch(InterruptedException e) {
 
-                        }
-                        String result = task.getResult();
-                        if(Integer.parseInt(result.trim()) > 0) {
-                            chk = true;
-                        } else if(Integer.parseInt(result.trim()) < 0) {
-                            chk = false;
-                        }
+                    }
+                    String result = task.getResult();
+                    if(result.trim().equals("success")) {
+                        chk = true;
+                    } else if(result.trim().equals("fail")) {
+                        chk = false;
                     }
                 }
 
@@ -191,7 +182,11 @@ public class PopupActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        cameraOpen();
+        if(insertList.size() > 0) {
+            cameraOpen();
+        } else if(insertList.size() == 0){
+            finishActivity.finish();
+        }
     }
 
     public void cameraOpen() {
