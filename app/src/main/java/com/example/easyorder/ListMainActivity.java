@@ -148,9 +148,9 @@ public class ListMainActivity extends AppCompatActivity {
                     BusinessData bizData = new BusinessData();
                     bizData.setMartNo(Integer.parseInt(jo.getString("martNo")));
                     Set<Map.Entry<Integer, String>> entrySet = map.entrySet();
-                    String srMartNm;
+                    String srMartNm="";
                     for(Map.Entry<Integer, String> entry : entrySet) {
-                        if(entry.getKey() == Integer.parseInt(jo.getString("martNo")) {
+                        if(entry.getKey() == Integer.parseInt(jo.getString("martNo"))) {
                             srMartNm = entry.getValue();
                             return;
                         }
