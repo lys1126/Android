@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,8 +21,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -104,7 +107,12 @@ public class ListMainActivity extends AppCompatActivity {
             }
         });
 
+        long now = System.currentTimeMillis();
+        Date mDate = new Date(now);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String today = simpleDateFormat.format(mDate);
         EditText et_srDate = (EditText) findViewById(R.id.et_srDate);
+        et_srDate.setText(today);
         et_srDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,7 +124,50 @@ public class ListMainActivity extends AppCompatActivity {
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String srList = "http://61.105.122.125/android/bizMainList.php";
+                String parm = "martNo="+martNo+"&crtDate="+et_srDate.getText();
+                URLConnector t = new URLConnector(srList, parm);
+                t.start();
+                try{
+                    t.join();
+                    System.out.println("waiting... fo result");
+                } catch(InterruptedException e) {
+                    e.printStackTrace();
+                }
 
+                String srResult = t.getResult();
+                bizList = new ArrayList<BusinessData>();
+                reListAdapter = new ReListMainAdapter(getApplicationContext(), bizList);
+                rv.setAdapter(reListAdapter);
+                try{
+                    JSONObject srObject = new JSONObject(srResult);
+                    int rowNum = Integer.parseInt(srObject.getString("rownum"));
+                    JSONArray ja = srObject.getJSONArray("result");
+                    if(rowNum > 0) {
+                        for(int i=0; i<ja.length(); i++) {
+                            JSONObject jo = ja.getJSONObject(i);
+                            BusinessData bizData = new BusinessData();
+                            bizData.setMartNo(Integer.parseInt(jo.getString("martNo")));
+                            Set<Map.Entry<Integer, String>> entrySet = map.entrySet();
+                            String srMartNm="";
+                            for(Map.Entry<Integer, String> entry : entrySet) {
+                                if(entry.getKey() == Integer.parseInt(jo.getString("martNo"))) {
+                                    srMartNm = entry.getValue();
+                                }
+                            }
+                            bizData.setMartNm(srMartNm);
+                            bizData.setCrtDate(jo.getString("crtDate"));
+                            bizData.setTotAmount(Integer.parseInt(jo.getString("totAmount")));
+                            bizData.setTotPrice(Integer.parseInt(jo.getString("totPrice")));
+                            bizList.add(bizData);
+                            reListAdapter.notifyDataSetChanged();
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "데이터가 존재하지 않습니다", Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -131,7 +182,7 @@ public class ListMainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        String srResult = task.getResult();
+        String dResult = task.getResult();
         rv = (RecyclerView) findViewById(R.id.rv);
         LinearLayoutManager lm = new LinearLayoutManager(this);
         rv.setLayoutManager(lm);
@@ -139,7 +190,7 @@ public class ListMainActivity extends AppCompatActivity {
         reListAdapter = new ReListMainAdapter(this, bizList);
         rv.setAdapter(reListAdapter);
         try{
-            JSONObject srObject = new JSONObject(srResult);
+            JSONObject srObject = new JSONObject(dResult);
             int rowNum = Integer.parseInt(srObject.getString("rownum"));
             JSONArray ja = srObject.getJSONArray("result");
             if(rowNum > 0) {
@@ -152,15 +203,14 @@ public class ListMainActivity extends AppCompatActivity {
                     for(Map.Entry<Integer, String> entry : entrySet) {
                         if(entry.getKey() == Integer.parseInt(jo.getString("martNo"))) {
                             srMartNm = entry.getValue();
-                            return;
                         }
                     }
                     bizData.setMartNm(srMartNm);
+                    bizData.setCrtDate(jo.getString("crtDate"));
                     bizData.setTotAmount(Integer.parseInt(jo.getString("totAmount")));
-                    bizData.setCrtDate(jo.getString("prod_nm"));
-                    bizData.setTotPrice(Integer.parseInt(jo.getString("u_price")));
+                    bizData.setTotPrice(Integer.parseInt(jo.getString("totPrice")));
                     bizList.add(bizData);
-
+                    reListAdapter.notifyDataSetChanged();
                 }
             } else {
                 Toast.makeText(getApplicationContext(), "데이터가 존재하지 않습니다", Toast.LENGTH_LONG).show();

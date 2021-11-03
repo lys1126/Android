@@ -9,12 +9,28 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/tv_martNm"
+            android:id="@+id/tv_prodNm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_margin="8dp"
+            android:ems="16"/>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#BFB5B5"/>
+
+        <TextView
+            android:id="@+id/tv_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="#000000"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:gravity="center"
             android:layout_margin="8dp"
             android:ems="6"/>
@@ -25,12 +41,12 @@
             android:background="#BFB5B5"/>
 
         <TextView
-            android:id="@+id/tv_date"
+            android:id="@+id/tv_uPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="#000000"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:gravity="center"
             android:layout_margin="8dp"
             android:ems="6"/>
@@ -41,28 +57,12 @@
             android:background="#BFB5B5"/>
 
         <TextView
-            android:id="@+id/tv_totAmount"
+            android:id="@+id/tv_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="#000000"
-            android:textSize="16dp"
-            android:gravity="center"
-            android:layout_margin="8dp"
-            android:ems="6"/>
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#BFB5B5"/>
-
-        <TextView
-            android:id="@+id/tv_totPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="#000000"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:gravity="center"
             android:layout_margin="8dp"
             android:ems="6"/>
