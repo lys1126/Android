@@ -5,14 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ListMainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#FFFFFF">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingTop="8dp"
-        android:paddingLeft="8dp">
+        android:paddingLeft="8dp"
+        android:background="#FFFFFF">
 
         <TextView
             android:layout_width="wrap_content"
@@ -44,7 +46,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:padding="8dp"
+        android:background="#FFFFFF">
 
         <Spinner
             android:id="@+id/spinner2"
@@ -52,6 +55,7 @@
             android:layout_height="wrap_content"
             android:textSize="16dp"
             android:textColor="#000000"
+            android:backgroundTint="#706E6E"
             android:minHeight="48dp"
             android:layout_weight="1"/>
 
@@ -64,6 +68,7 @@
             android:textSize="16dp"
             android:ems="8"
             android:textColor="#000000"
+            android:backgroundTint="#706E6E"
             android:minHeight="48dp"
             android:clickable="true"
             android:editable="false"
@@ -87,7 +92,8 @@
         android:layout_height="50dp"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:gravity="center">
+        android:gravity="center"
+        android:background="#FFFFFF">
 
         <TextView
             android:layout_width="wrap_content"
@@ -144,7 +150,8 @@
         android:scrollbarSize="5dp"
         android:scrollbarThumbVertical="@android:color/darker_gray"
         android:scrollbars="vertical"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:background="#FFFFFF"/>
 
 
 </LinearLayout>

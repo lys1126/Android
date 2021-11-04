@@ -81,7 +81,7 @@ public class ListMainActivity extends AppCompatActivity {
         }
 
         Spinner spinner = (Spinner) findViewById(R.id.spinner2);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, nmArr);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.item_spinner, nmArr);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

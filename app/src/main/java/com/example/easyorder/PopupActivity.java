@@ -167,13 +167,11 @@ public class PopupActivity extends AppCompatActivity {
                 }
 
                 if(chk) {
-                    Log.e("chkTest", "성공이다!!");
+                    Toast.makeText(getApplicationContext(), martNm+" 등록이 완료되었습니다", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
                     finish();
-                    Toast.makeText(getApplicationContext(), martNm+" 등록이 완료되었습니다", Toast.LENGTH_LONG).show();
                 } else {
-                    Log.e("chkTest", "실패다!!");
                     Toast.makeText(getApplicationContext(), martNm+" 등록이 실패했습니다", Toast.LENGTH_LONG).show();
                 }
             }
