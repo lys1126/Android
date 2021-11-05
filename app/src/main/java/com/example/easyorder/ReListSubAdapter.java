@@ -56,7 +56,7 @@ public class ReListSubAdapter extends RecyclerView.Adapter<ReListSubAdapter.Cust
                 String getAmount = holder.et_amount.getText().toString();
                 if(!"".equals(getAmount) && holder.et_amount.getText() != null && !getAmount.equals("-")) {
                     amount = Integer.parseInt(holder.et_amount.getText().toString());
-                    if(amount != ) {
+                    if(amount != arrayList.get(posit).getAmount()) {
                         ListSubActivity.btn_update.setEnabled(true);
                     } else {
                         ListSubActivity.btn_update.setEnabled(false);
