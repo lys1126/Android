@@ -34,12 +34,11 @@ public class InsertActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if(intentResult != null) {
-            if(intentResult.getContents() == null) {
-                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
-            } else {
-                //result.getContents 를 이용 데이터 재가공
+            if(intentResult.getContents() != null) {
+                Log.e("test", "ifif");
                 String searchURL = "http://61.105.122.125/android/prodSearch.php";
-                String parm = "bar_no=" + intentResult.getContents();
+                String parm = "bar_no=" + intentResult.getContents().trim();
+                Log.e("param", parm);
                 URLConnector task = new URLConnector(searchURL, parm);
                 task.start();
 
@@ -60,6 +59,7 @@ public class InsertActivity extends AppCompatActivity {
                         intent.putExtra("martNm", martNm);
                         intent.putExtra("prodInfo", prodInfo);
                         startActivityForResult(intent, 1);
+                        finish();
                     } else {
                         Toast.makeText(getApplicationContext(), "바코드를 다시 인식해주세요", Toast.LENGTH_SHORT).show();
                     }
@@ -137,5 +137,12 @@ public class InsertActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

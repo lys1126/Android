@@ -1,5 +1,7 @@
 package com.example.easyorder;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -8,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -21,8 +24,13 @@ import java.util.ArrayList;
 public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.CustomViewHolder>{
 
     private ArrayList<BusinessData> arrayList;
+    private Context mContext;
+    private InputMethodManager imm;
 
-    public RecycleAdapter(ArrayList<BusinessData> arrayList) {this.arrayList = arrayList;}
+    public RecycleAdapter(ArrayList<BusinessData> arrayList, Context mContext) {
+        this.arrayList = arrayList;
+        this.mContext = mContext;
+    }
 
     @NonNull
     @Override
@@ -89,11 +97,11 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.CustomVi
                     uPrice = getUprice;
                 } else {
                     uPrice = 0;
-                    arrayList.get(posit).setUPrice(0);
                 }
                 amount = Integer.parseInt(holder.et_amount.getText().toString());
                 holder.et_price.setText(getUprice*amount+"");
                 arrayList.get(posit).setAmount(amount);
+                arrayList.get(posit).setUPrice(uPrice);
                 arrayList.get(posit).setPrice(amount*uPrice);
             }
 
@@ -115,7 +123,11 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.CustomVi
         });
 
         if(position == arrayList.size() - 1) {
+            Log.e("lastAmountFocus", "키보드 올리기!!");
             holder.et_amount.requestFocus();
+            imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.RESULT_SHOWN, InputMethodManager.RESULT_SHOWN);
+            holder.et_amount.setSelection(holder.et_amount.length());
         }
 
     }

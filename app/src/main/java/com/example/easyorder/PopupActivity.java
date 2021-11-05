@@ -1,12 +1,13 @@
 package com.example.easyorder;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -47,7 +48,8 @@ public class PopupActivity extends AppCompatActivity {
                 }
             } else { //다음버튼 클릭 후 바코드 읽어오기
                 String searchURL = "http://61.105.122.125/android/prodSearch.php";
-                String parm = "bar_no=" + intentResult.getContents();
+                String parm = "bar_no=" + intentResult.getContents().trim();
+                Log.e("param", parm);
                 URLConnector task = new URLConnector(searchURL, parm);
                 task.start();
 
@@ -106,7 +108,7 @@ public class PopupActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         insertList = new ArrayList<>();
-        recycleAdapter = new RecycleAdapter(insertList);
+        recycleAdapter = new RecycleAdapter(insertList, getApplicationContext());
         recyclerView.setAdapter(recycleAdapter);
         try {
             JSONObject pInfo = new JSONObject(prodInfo);
@@ -143,6 +145,11 @@ public class PopupActivity extends AppCompatActivity {
         btn_finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(getCurrentFocus() instanceof EditText) {
+                    EditText focusEt = (EditText) getCurrentFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(focusEt.getWindowToken(), 0);
+                }
                 String insertURL = "http://61.105.122.125/android/bizInsert.php";
                 boolean chk = false;
                 for(int i=0; i<insertList.size(); i++) {
@@ -183,6 +190,8 @@ public class PopupActivity extends AppCompatActivity {
         if(insertList.size() > 0) {
             cameraOpen();
         } else if(insertList.size() == 0){
+            Intent intent = new Intent(getApplicationContext(), InsertActivity.class);
+            startActivity(intent);
             finishActivity.finish();
         }
     }

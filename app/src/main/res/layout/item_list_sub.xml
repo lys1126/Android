@@ -26,8 +26,8 @@
             android:layout_height="match_parent"
             android:background="#BFB5B5"/>
 
-        <TextView
-            android:id="@+id/tv_amount"
+        <EditText
+            android:id="@+id/et_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -35,15 +35,16 @@
             android:textSize="16sp"
             android:gravity="center"
             android:layout_margin="8dp"
-            android:ems="6"/>
+            android:ems="6"
+            android:backgroundTint="#706E6E"/>
 
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
             android:background="#BFB5B5"/>
 
-        <TextView
-            android:id="@+id/tv_uPrice"
+        <EditText
+            android:id="@+id/et_uPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -51,7 +52,8 @@
             android:textSize="16sp"
             android:gravity="center"
             android:layout_margin="8dp"
-            android:ems="6"/>
+            android:ems="6"
+            android:backgroundTint="#706E6E"/>
 
         <View
             android:layout_width="1dp"

@@ -1,8 +1,11 @@
 package com.example.easyorder;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +26,12 @@ public class ReListSubAdapter extends RecyclerView.Adapter<ReListSubAdapter.Cust
     public ReListSubAdapter.CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_sub, parent, false);
         CustomViewHolder holder = new CustomViewHolder(view);
+//        int[] amountArr = {};
+//        int[] uPriceArr = {};
+//        for(int i=0; i<size; i++) {
+//            amountArr[i] = arrayList.get(i).getAmount();
+//            uPriceArr[i] = arrayList.get(i).getUPrice();
+//        }
 
         return holder;
     }
@@ -30,9 +39,95 @@ public class ReListSubAdapter extends RecyclerView.Adapter<ReListSubAdapter.Cust
     @Override
     public void onBindViewHolder(@NonNull ReListSubAdapter.CustomViewHolder holder, int position) {
         holder.tv_prodNm.setText(arrayList.get(position).getProdNm());
-        holder.tv_amount.setText(arrayList.get(position).getAmount()+"");
-        holder.tv_uPrice.setText(arrayList.get(position).getUPrice()+"");
+        holder.et_amount.setText(arrayList.get(position).getAmount()+"");
+        holder.et_uPrice.setText(arrayList.get(position).getUPrice()+"");
         holder.tv_price.setText(arrayList.get(position).getPrice()+"");
+
+        holder.et_amount.addTextChangedListener(new TextWatcher() {
+            int amount, uPrice;
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                int posit = holder.getAdapterPosition();
+                String getAmount = holder.et_amount.getText().toString();
+                if(!"".equals(getAmount) && holder.et_amount.getText() != null && !getAmount.equals("-")) {
+                    amount = Integer.parseInt(holder.et_amount.getText().toString());
+                    if(amount != ) {
+                        ListSubActivity.btn_update.setEnabled(true);
+                    } else {
+                        ListSubActivity.btn_update.setEnabled(false);
+                    }
+                } else {
+                    amount = 0;
+                    if(amount != arrayList.get(posit).getAmount()) {
+                        ListSubActivity.btn_update.setEnabled(true);
+                    } else {
+                        ListSubActivity.btn_update.setEnabled(false);
+                    }
+                }
+                uPrice = Integer.parseInt(holder.et_uPrice.getText().toString());
+                holder.tv_price.setText(amount*uPrice + "");
+                arrayList.get(posit).setAmount(amount);
+                arrayList.get(posit).setPrice(amount*uPrice);
+
+                int totPrice = 0;
+                for(int n=0; n<arrayList.size(); n++) {
+                    totPrice = totPrice + arrayList.get(n).getPrice();
+                }
+                ListSubActivity.tv_totPrice.setText(totPrice+"원");
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        holder.et_uPrice.addTextChangedListener(new TextWatcher() {
+            int amount, uPrice;
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                int posit = holder.getAdapterPosition();
+                if(!"".equals(holder.et_uPrice.getText().toString()) && holder.et_uPrice.getText() != null) {
+                    if(uPrice != arrayList.get(posit).getUPrice()) {
+                        ListSubActivity.btn_update.setEnabled(true);
+                    } else {
+                        ListSubActivity.btn_update.setEnabled(false);
+                    }
+                    uPrice = Integer.parseInt(holder.et_uPrice.getText().toString());
+                } else {
+                    uPrice = 0;
+                    if(uPrice != arrayList.get(posit).getUPrice()) {
+                        ListSubActivity.btn_update.setEnabled(true);
+                    } else {
+                        ListSubActivity.btn_update.setEnabled(false);
+                    }
+                }
+                amount = Integer.parseInt(holder.et_amount.getText().toString());
+                holder.tv_price.setText(uPrice*amount+"");
+                arrayList.get(posit).setUPrice(uPrice);
+                arrayList.get(posit).setPrice(amount*uPrice);
+
+                int totPrice = 0;
+                for(int n=0; n<arrayList.size(); n++) {
+                    totPrice = totPrice + arrayList.get(n).getPrice();
+                }
+                ListSubActivity.tv_totPrice.setText(totPrice+"원");
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     @Override
@@ -41,14 +136,15 @@ public class ReListSubAdapter extends RecyclerView.Adapter<ReListSubAdapter.Cust
     }
 
     public class CustomViewHolder extends RecyclerView.ViewHolder {
-        protected TextView tv_prodNm, tv_amount, tv_uPrice, tv_price;
+        protected TextView tv_prodNm, tv_price;
+        protected EditText et_amount, et_uPrice;
 
         public CustomViewHolder(@NonNull View itemView) {
             super(itemView);
 
             this.tv_prodNm = (TextView) itemView.findViewById(R.id.tv_prodNm);
-            this.tv_amount = (TextView) itemView.findViewById(R.id.tv_amount);
-            this.tv_uPrice = (TextView) itemView.findViewById(R.id.tv_uPrice);
+            this.et_amount = (EditText) itemView.findViewById(R.id.et_amount);
+            this.et_uPrice = (EditText) itemView.findViewById(R.id.et_uPrice);
             this.tv_price = (TextView) itemView.findViewById(R.id.tv_price);
         }
     }

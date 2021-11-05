@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +25,8 @@ public class ListSubActivity extends AppCompatActivity {
     private ArrayList<BusinessData> bizList;
     private RecyclerView rv;
     private ReListSubAdapter reListAdapter;
+    public static TextView tv_totPrice;
+    public static Button btn_update;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +89,15 @@ public class ListSubActivity extends AppCompatActivity {
         for(int i=0; i<bizList.size(); i++) {
             totPrice += bizList.get(i).getPrice();
         }
-        TextView tv_totPrice = (TextView) findViewById(R.id.tv_totPrice);
+        tv_totPrice = (TextView) findViewById(R.id.tv_totPrice);
         tv_totPrice.setText(totPrice+"원");
+
+        btn_update = (Button) findViewById(R.id.btn_update);
+        btn_update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.e("test", "touch!!!!!!!");
+            }
+        });
     }
 }

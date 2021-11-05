@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), InsertActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
