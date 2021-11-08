@@ -23,8 +23,10 @@ import java.util.Set;
 public class ListSubActivity extends AppCompatActivity {
 
     private ArrayList<BusinessData> bizList;
+    public static ArrayList<BusinessData> temp = new ArrayList<BusinessData>();
     private RecyclerView rv;
     private ReListSubAdapter reListAdapter;
+    private boolean chk=false;
     public static TextView tv_totPrice;
     public static Button btn_update;
 
@@ -45,7 +47,6 @@ public class ListSubActivity extends AppCompatActivity {
 
         String bizMainList = "http://61.105.122.125/android/bizSubList.php";
         String param = "martNo="+martNo+"&crtDate="+crtDate;
-        Log.e("paramTest", param);
         URLConnector task = new URLConnector(bizMainList, param);
         task.start();
         try{
@@ -56,7 +57,6 @@ public class ListSubActivity extends AppCompatActivity {
         }
 
         String dResult = task.getResult();
-        Log.e("dbTest", dResult);
         rv = (RecyclerView) findViewById(R.id.rv);
         LinearLayoutManager lm = new LinearLayoutManager(this);
         rv.setLayoutManager(lm);
@@ -71,12 +71,24 @@ public class ListSubActivity extends AppCompatActivity {
                 for(int i=0; i<ja.length(); i++) {
                     JSONObject jo = ja.getJSONObject(i);
                     BusinessData bizData = new BusinessData();
+                    bizData.setBizNo(Integer.parseInt(jo.getString("bizNo").toString()));
                     bizData.setProdNm(jo.getString("prodNm").toString());
                     bizData.setUPrice(Integer.parseInt(jo.getString("uPrice").toString()));
                     bizData.setAmount(Integer.parseInt(jo.getString("amount").toString()));
                     bizData.setPrice(Integer.parseInt(jo.getString("price").toString()));
                     bizList.add(bizData);
                     reListAdapter.notifyDataSetChanged();
+                }
+
+                for(int i=0; i<ja.length(); i++) { //수정버튼 enable 비교를 위한 for문
+                    JSONObject jo = ja.getJSONObject(i);
+                    BusinessData bizData = new BusinessData();
+                    bizData.setBizNo(Integer.parseInt(jo.getString("bizNo").toString()));
+                    bizData.setProdNm(jo.getString("prodNm").toString());
+                    bizData.setUPrice(Integer.parseInt(jo.getString("uPrice").toString()));
+                    bizData.setAmount(Integer.parseInt(jo.getString("amount").toString()));
+                    bizData.setPrice(Integer.parseInt(jo.getString("price").toString()));
+                    temp.add(bizData);
                 }
             } else {
                 Toast.makeText(getApplicationContext(), "데이터가 존재하지 않습니다", Toast.LENGTH_LONG).show();
@@ -96,8 +108,44 @@ public class ListSubActivity extends AppCompatActivity {
         btn_update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("test", "touch!!!!!!!");
+                for(int i=0; i<bizList.size(); i++) {
+                    if(bizList.get(i).getAmount() != temp.get(i).getAmount() || bizList.get(i).getUPrice() != temp.get(i).getUPrice()) {
+                        String bizMainList = "http://61.105.122.125/android/bizUpdate.php";
+                        String param = "bizNo="+bizList.get(i).getBizNo()+"&amount="+bizList.get(i).getAmount()+"&uPrice="+bizList.get(i).getUPrice();
+                        Log.e("paramTest", param);
+                        URLConnector task = new URLConnector(bizMainList, param);
+                        task.start();
+                        try{
+                            task.join();
+                            System.out.println("waiting... fo result");
+                        } catch(InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        String upResult = task.getResult().trim();
+                        Log.e("updateTest", upResult);
+                        if(upResult.equals("success")) {
+                            chk = true;
+                        } else if(upResult.equals("fail")) {
+                            chk = false;
+                        }
+                    }
+                }
+
+                if(chk) {
+                    Intent intent = new Intent(getApplicationContext(), ListMainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(getApplicationContext(), "수정이 실패했습니다.", Toast.LENGTH_LONG).show();
+                }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), ListMainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.easyorder;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -49,6 +50,7 @@ public class ReListMainAdapter extends RecyclerView.Adapter<ReListMainAdapter.Cu
                 intent.putExtra("martNm", arrayList.get(posit).getMartNm());
                 intent.putExtra("srDate", arrayList.get(posit).getCrtDate());
                 mContext.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                ListMainActivity.finishAct.finish();
             }
         });
     }

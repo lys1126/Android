@@ -2,6 +2,7 @@ package com.example.easyorder;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,12 +27,6 @@ public class ReListSubAdapter extends RecyclerView.Adapter<ReListSubAdapter.Cust
     public ReListSubAdapter.CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_sub, parent, false);
         CustomViewHolder holder = new CustomViewHolder(view);
-//        int[] amountArr = {};
-//        int[] uPriceArr = {};
-//        for(int i=0; i<size; i++) {
-//            amountArr[i] = arrayList.get(i).getAmount();
-//            uPriceArr[i] = arrayList.get(i).getUPrice();
-//        }
 
         return holder;
     }
@@ -56,14 +51,14 @@ public class ReListSubAdapter extends RecyclerView.Adapter<ReListSubAdapter.Cust
                 String getAmount = holder.et_amount.getText().toString();
                 if(!"".equals(getAmount) && holder.et_amount.getText() != null && !getAmount.equals("-")) {
                     amount = Integer.parseInt(holder.et_amount.getText().toString());
-                    if(amount != arrayList.get(posit).getAmount()) {
+                    if(amount != ListSubActivity.temp.get(posit).getAmount()) {
                         ListSubActivity.btn_update.setEnabled(true);
                     } else {
                         ListSubActivity.btn_update.setEnabled(false);
                     }
                 } else {
                     amount = 0;
-                    if(amount != arrayList.get(posit).getAmount()) {
+                    if(amount != ListSubActivity.temp.get(posit).getAmount()) {
                         ListSubActivity.btn_update.setEnabled(true);
                     } else {
                         ListSubActivity.btn_update.setEnabled(false);
@@ -97,15 +92,15 @@ public class ReListSubAdapter extends RecyclerView.Adapter<ReListSubAdapter.Cust
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 int posit = holder.getAdapterPosition();
                 if(!"".equals(holder.et_uPrice.getText().toString()) && holder.et_uPrice.getText() != null) {
-                    if(uPrice != arrayList.get(posit).getUPrice()) {
+                    uPrice = Integer.parseInt(holder.et_uPrice.getText().toString());
+                    if(uPrice != ListSubActivity.temp.get(posit).getUPrice()) {
                         ListSubActivity.btn_update.setEnabled(true);
                     } else {
                         ListSubActivity.btn_update.setEnabled(false);
                     }
-                    uPrice = Integer.parseInt(holder.et_uPrice.getText().toString());
                 } else {
                     uPrice = 0;
-                    if(uPrice != arrayList.get(posit).getUPrice()) {
+                    if(uPrice != ListSubActivity.temp.get(posit).getUPrice()) {
                         ListSubActivity.btn_update.setEnabled(true);
                     } else {
                         ListSubActivity.btn_update.setEnabled(false);

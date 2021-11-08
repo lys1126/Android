@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,7 +33,7 @@ import java.util.Set;
 
 public class ListMainActivity extends AppCompatActivity {
 
-    String martNm;
+    String martNm, gubun;
     int martNo;
     private Calendar calendar = Calendar.getInstance();
     private DatePickerDialog.OnDateSetListener datePicker = new DatePickerDialog.OnDateSetListener() {
@@ -41,17 +42,20 @@ public class ListMainActivity extends AppCompatActivity {
             calendar.set(Calendar.YEAR, i);
             calendar.set(Calendar.MONTH, i1);
             calendar.set(Calendar.DAY_OF_MONTH, i2);
-            updateLabel();
+            updateLabel(gubun);
         }
     };
     private ArrayList<BusinessData> bizList;
     private RecyclerView rv;
     private ReListMainAdapter reListAdapter;
+    public static Activity finishAct;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_main);
+
+        finishAct = ListMainActivity.this;
 
         String martInfoURL = "http://61.105.122.125/android/martList.php";
         URLConnector task = new URLConnector(martInfoURL, null);
@@ -111,12 +115,26 @@ public class ListMainActivity extends AppCompatActivity {
         Date mDate = new Date(now);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String today = simpleDateFormat.format(mDate);
-        EditText et_srDate = (EditText) findViewById(R.id.et_srDate);
-        et_srDate.setText(today);
-        et_srDate.setOnClickListener(new View.OnClickListener() {
+        Calendar day = Calendar.getInstance();
+        day.add(Calendar.DATE, -7);
+        String beforeDay = simpleDateFormat.format(day.getTime());
+        EditText et_srStDate = (EditText) findViewById(R.id.et_srStDate);
+        et_srStDate.setText(beforeDay);
+        et_srStDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new DatePickerDialog(ListMainActivity.this, datePicker, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+                gubun = "start";
+            }
+        });
+
+        EditText et_srEndDate = (EditText) findViewById(R.id.et_srEndDate);
+        et_srEndDate.setText(today);
+        et_srEndDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new DatePickerDialog(ListMainActivity.this, datePicker, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+                gubun = "end";
             }
         });
 
@@ -125,7 +143,7 @@ public class ListMainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String srList = "http://61.105.122.125/android/bizMainList.php";
-                String parm = "martNo="+martNo+"&crtDate="+et_srDate.getText();
+                String parm = "martNo="+martNo+"&stDate="+et_srStDate.getText()+"&endDate="+et_srEndDate.getText();
                 URLConnector t = new URLConnector(srList, parm);
                 t.start();
                 try{
@@ -172,7 +190,7 @@ public class ListMainActivity extends AppCompatActivity {
         });
 
         String bizMainList = "http://61.105.122.125/android/bizMainList.php";
-        String param = "martNo="+martNo+"&crtDate="+et_srDate.getText();
+        String param = "martNo="+martNo+"&stDate="+et_srStDate.getText()+"&endDate="+et_srEndDate.getText();Log.e("param", param);
         task = new URLConnector(bizMainList, param);
         task.start();
         try{
@@ -220,11 +238,17 @@ public class ListMainActivity extends AppCompatActivity {
         }
     }
 
-    private void updateLabel() {
+    private void updateLabel(String gubun) {
         String myFormat = "yyyy-MM-dd";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.KOREA);
 
-        EditText et_srDate = (EditText) findViewById(R.id.et_srDate);
-        et_srDate.setText(sdf.format(calendar.getTime()));
+        if(gubun.equals("start")) {
+            EditText et_srStDate = (EditText) findViewById(R.id.et_srStDate);
+            et_srStDate.setText(sdf.format(calendar.getTime()));
+        } else if(gubun.equals("end")) {
+            EditText et_srEndDate = (EditText) findViewById(R.id.et_srEndDate);
+            et_srEndDate.setText(sdf.format(calendar.getTime()));
+        }
+
     }
 }
